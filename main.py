@@ -142,7 +142,7 @@ plt.xlim()
 plt.legend()
 fig5.savefig("graph/loss_age.png")
 
-#ラベルgi
+#ラベル
 sex_label = ['male', 'female']
 age_label = ['~14', '15~19', '20~24', '25~29', '30~34', '35~39', '40~']
 
