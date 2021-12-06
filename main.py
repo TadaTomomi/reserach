@@ -41,8 +41,8 @@ train_dataset = CTDataset(train_data, train_label, transform=train_transform)
 valid_dataset = CTDataset(valid_data, valid_label, transform=valid_transform)
 
 #データローダーを定義
-train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=5, shuffle=True)
-valid_dataloader = torch.utils.data.DataLoader(valid_dataset, batch_size=5, shuffle=False)
+train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=4, shuffle=True)
+valid_dataloader = torch.utils.data.DataLoader(valid_dataset, batch_size=4, shuffle=False)
 
 #モデルを読み込む
 model = CNN3D().to(device)
@@ -50,13 +50,13 @@ model = CNN3D().to(device)
 print(model)
 
 #損失関数
-# sex_weight = torch.tensor([7.0, 3.0]).cuda()
-# age_weight = torch.tensor([12.0, 2.0, 3.0, 4.0, 6.0, 6.0, 12.0]).cuda()
-# sex_criterion = nn.CrossEntropyLoss(weight=sex_weight)
-# age_criterion = nn.CrossEntropyLoss(weight=age_weight)
+sex_weight = torch.tensor([7.0, 3.0]).cuda()
+age_weight = torch.tensor([12.0, 2.0, 3.0, 4.0, 6.0, 6.0, 12.0]).cuda()
+sex_criterion = nn.CrossEntropyLoss(weight=sex_weight)
+age_criterion = nn.CrossEntropyLoss(weight=age_weight)
 
-sex_criterion = nn.CrossEntropyLoss()
-age_criterion = nn.CrossEntropyLoss()
+# sex_criterion = nn.CrossEntropyLoss()
+# age_criterion = nn.CrossEntropyLoss()
 
 #最適化手法
 optimizer = optim.Adam(model.parameters(), lr=0.01)
@@ -158,8 +158,8 @@ y_age = y[:, 1]
 print('GroundTruth: ', ' '.join('%5s' % sex_label[y_sex[j]] for j in range(4)))
 print('GroundTruth: ', ' '.join('%5s' % age_label[y_age[j]] for j in range(4)))
 pred_sex, pred_age = model(X)
-print(pred_sex)
-print(pred_age)
+# print(pred_sex)
+# print(pred_age)
 _, pred_sex = torch.max(pred_sex, 1)
 _, pred_age = torch.max(pred_age, 1)
 # print(pred_sex)

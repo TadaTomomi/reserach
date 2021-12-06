@@ -5,11 +5,7 @@ class CNN3D(nn.Module):
     def __init__(self):
         super().__init__()
         self.features = nn.Sequential(
-<<<<<<< HEAD
             nn.Conv3d(in_channels=1, out_channels=64, kernel_size=5, padding=2),
-=======
-            nn.Conv3d(in_channels=1, out_channels=64, kernel_size=5, padding=2),#####
->>>>>>> f8d333f1ffd4ce1dac48000edfd4df8b21db461e
             nn.ReLU(inplace=True),
             nn.MaxPool3d(kernel_size=2),
             nn.Conv3d(in_channels=64, out_channels=128, kernel_size=3, padding=1),

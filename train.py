@@ -11,6 +11,9 @@ def train(dataloader, model, loss_fn1, loss_fn2, optimizer, device):
     for batch, (X, y) in enumerate(dataloader):
         X, y = X.to(device), y.to(device)
         pred_sex, pred_age = model(X)
+
+        # print(pred_sex)
+        # print(pred_age)
       
         #yをsexとageに分ける
         y_sex = y[:, 0]
