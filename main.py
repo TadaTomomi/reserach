@@ -29,12 +29,12 @@ train_transform = transforms.Compose([
     # transforms.RandomHorizontalFlip(),
     # transforms.RandomRotation(10),
     # transforms.Normalize((0.5, ), (0.5, )) 間違い
-    transforms.Normalize(0.5, 0.5)
+    transforms.Normalize((0.5), (0.5))
     ])
 
 valid_transform = transforms.Compose([
     # transforms.Normalize((0.5, ), (0.5, )) 間違い
-    transforms.Normalize(0.5, 0.5)
+    transforms.Normalize((0.5), (0.5))
     ])
 
 
@@ -64,7 +64,7 @@ age_criterion = nn.CrossEntropyLoss(weight=age_weight)
 optimizer = optim.Adam(model.parameters(), lr=0.01)
 
 #学習・検証
-epochs = 100
+epochs = 10
 train_loss_list = []
 valid_loss_list = []
 train_correct_sex_list = []

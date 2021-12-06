@@ -117,10 +117,10 @@ np_y_age = valid_label[1].detach().numpy().copy()
 
 print("性別の正解")
 print(np_y_sex)
-print("年齢の正解")
-print(np_y_age)
 print("性別の予測")
 print(pred_sex_list)
+print("年齢の正解")
+print(np_y_age)
 print("年齢の予測")
 print(pred_age_list)
 
