@@ -26,13 +26,15 @@ valid_label = make_label('/home/student/datasets/CT200_160/valid_label.csv')
 
 #前処理を定義
 train_transform = transforms.Compose([
-    transforms.RandomHorizontalFlip(),
-    transforms.RandomRotation(10),
-    transforms.Normalize((0.5, ), (0.5, ))
+    # transforms.RandomHorizontalFlip(),
+    # transforms.RandomRotation(10),
+    # transforms.Normalize((0.5, ), (0.5, )) 間違い
+    transforms.Normalize(0.5, 0.5)
     ])
 
 valid_transform = transforms.Compose([
-    transforms.Normalize((0.5, ), (0.5, ))
+    # transforms.Normalize((0.5, ), (0.5, )) 間違い
+    transforms.Normalize(0.5, 0.5)
     ])
 
 
@@ -62,7 +64,7 @@ age_criterion = nn.CrossEntropyLoss(weight=age_weight)
 optimizer = optim.Adam(model.parameters(), lr=0.01)
 
 #学習・検証
-epochs = 10
+epochs = 100
 train_loss_list = []
 valid_loss_list = []
 train_correct_sex_list = []
@@ -132,6 +134,7 @@ plt.plot(valid_loss_sex_list, label='validation loss')
 plt.xlim()
 plt.legend()
 fig4.savefig("graph/loss_sex.png")
+
 # 年齢の損失のグラフ表示
 fig5 = plt.figure()
 plt.xlabel("epoch")
