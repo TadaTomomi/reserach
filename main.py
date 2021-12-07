@@ -67,7 +67,7 @@ age_criterion = nn.CrossEntropyLoss(weight=age_weight)
 optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
 #学習・検証
-epochs = 10
+epochs = 30
 train_loss_list = []
 valid_loss_list = []
 train_correct_sex_list = []
