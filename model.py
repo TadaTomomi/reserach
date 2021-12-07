@@ -1,8 +1,6 @@
 import torch
 import torch.nn as nn
 
-torch.manual_seed(0)  ###########################
-
 class CNN3D(nn.Module):
     def __init__(self):
         super().__init__()

@@ -43,7 +43,9 @@ def make_data(data_directory):
             volume.append(image4)
         zero = np.zeros(((max-num), 1, 96, 96))
         np_volume = np.array(volume)
-        volume = np.append(np_volume, zero, axis=0).tolist()
+        # volume = np.append(np_volume, zero, axis=0).tolist()
+        volume = np.append(np_volume, zero, axis=0) / 255.0
+        volume = volume.tolist()
         datasets.append(volume)
     torch_datasets = torch.tensor(datasets).permute(0, 2, 1, 3, 4)
 

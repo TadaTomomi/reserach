@@ -25,16 +25,17 @@ train_label = make_label('/home/student/datasets/CT200_160/train_label.csv')
 valid_label = make_label('/home/student/datasets/CT200_160/valid_label.csv')
 
 #前処理を定義
+mean, std = 0.07, 0.14
 train_transform = transforms.Compose([
     # transforms.RandomHorizontalFlip(),
     # transforms.RandomRotation(10),
     # transforms.Normalize((0.5, ), (0.5, )) 間違い
-    transforms.Normalize((0.5), (0.5))
+    transforms.Normalize(mean, std)
     ])
 
 valid_transform = transforms.Compose([
     # transforms.Normalize((0.5, ), (0.5, )) 間違い
-    transforms.Normalize((0.5), (0.5))
+    transforms.Normalize(mean, std)
     ])
 
 
@@ -53,6 +54,8 @@ print(model)
 
 #損失関数
 sex_weight = torch.tensor([7.0, 3.0]).cuda()
+# sex_weight = torch.tensor([2.0, 1.0]).cuda()
+# age_weight = torch.tensor([12.0, 2.0, 3.0, 4.0, 6.0, 6.0, 12.0]).cuda()
 age_weight = torch.tensor([12.0, 2.0, 3.0, 4.0, 6.0, 6.0, 12.0]).cuda()
 sex_criterion = nn.CrossEntropyLoss(weight=sex_weight)
 age_criterion = nn.CrossEntropyLoss(weight=age_weight)
@@ -61,7 +64,7 @@ age_criterion = nn.CrossEntropyLoss(weight=age_weight)
 # age_criterion = nn.CrossEntropyLoss()
 
 #最適化手法
-optimizer = optim.Adam(model.parameters(), lr=0.01)
+optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
 #学習・検証
 epochs = 10
