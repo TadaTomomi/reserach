@@ -23,8 +23,9 @@ valid_data = make_data("/home/student/datasets/CT200_160/valid/*")
 valid_label = make_label('/home/student/datasets/CT200_160/valid_label.csv')
 
 #前処理を定義
+mean, std = 0.07, 0.14
 valid_transform = transforms.Compose([
-    transforms.Normalize((0.5, ), (0.5, ))
+    transforms.Normalize(mean, std)
     ])
 
 

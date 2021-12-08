@@ -27,14 +27,12 @@ valid_label = make_label('/home/student/datasets/CT200_160/valid_label.csv')
 #前処理を定義
 mean, std = 0.07, 0.14
 train_transform = transforms.Compose([
-    # transforms.RandomHorizontalFlip(),
-    # transforms.RandomRotation(10),
-    # transforms.Normalize((0.5, ), (0.5, )) 間違い
+    transforms.RandomHorizontalFlip(),
+    transforms.RandomRotation(10),
     transforms.Normalize(mean, std)
     ])
 
 valid_transform = transforms.Compose([
-    # transforms.Normalize((0.5, ), (0.5, )) 間違い
     transforms.Normalize(mean, std)
     ])
 
@@ -67,7 +65,7 @@ age_criterion = nn.CrossEntropyLoss(weight=age_weight)
 optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
 #学習・検証
-epochs = 30
+epochs = 50
 train_loss_list = []
 valid_loss_list = []
 train_correct_sex_list = []
