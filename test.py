@@ -11,7 +11,7 @@ from model import CNN3D
 from train import train
 from valid import valid
 import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, accuracy_score, recall_score, precision_score, f1_score
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print("Using {} device".format(device))
@@ -47,7 +47,6 @@ age_label = ['~14', '15~19', '20~24', '25~29', '30~34', '35~39', '40~']
 #4つ試してみる
 dataiter = iter(valid_dataloader)
 X, y = dataiter.next()
-print(X[1][0][50][30][30])
 X, y = X.to(device), y.to(device)
 # print(X)
 # print(X.shape)
@@ -58,8 +57,8 @@ y_age = y[:, 1]
 print('GroundTruth: ', ' '.join('%5s' % sex_label[y_sex[j]] for j in range(4)))
 print('GroundTruth: ', ' '.join('%5s' % age_label[y_age[j]] for j in range(4)))
 pred_sex, pred_age = model(X)
-print(pred_sex)
-print(pred_age)
+# print(pred_sex)
+# print(pred_age)
 _, pred_sex = torch.max(pred_sex, 1)
 _, pred_age = torch.max(pred_age, 1)
 # print(pred_sex)
@@ -132,3 +131,43 @@ print("性別の混同行列")
 print(cm_sex)
 print("年齢の混同行列")
 print(cm_age)
+
+# #性別
+acc_sex = accuracy_score(np_y_sex, pred_sex_list)
+rec_sex = recall_score(np_y_sex, pred_sex_list, average=None)
+rec_sex_macro = recall_score(np_y_sex, pred_sex_list, average="macro")
+pre_sex = precision_score(np_y_sex, pred_sex_list, average=None)
+pre_sex_macro = precision_score(np_y_sex, pred_sex_list, average="macro")
+f1_sex = f1_score(np_y_sex, pred_sex_list, average=None)
+f1_sex_macro = f1_score(np_y_sex, pred_sex_list, average="macro")
+print("\n性別")
+print("正解率(Accuracy):{0:.3f}".format(acc_sex))
+print("再現率(Recall)")
+print(list(map(round, rec_sex, [3]*len(rec_sex))))
+print("適合率(Precision)")
+print(list(map(round, pre_sex, [3]*len(pre_sex))))
+print("F値")
+print(list(map(round, f1_sex, [3]*len(f1_sex))))
+print("再現率(Recall)平均:{0:.3f}".format(rec_sex_macro))
+print("適合率(Precision)平均:{0:.3f}".format(pre_sex_macro))
+print("F値平均:{0:.3f}".format(f1_sex_macro))
+
+#年齢
+acc_age = accuracy_score(np_y_age, pred_age_list)
+rec_age = recall_score(np_y_age, pred_age_list, average=None)
+rec_age_macro = recall_score(np_y_age, pred_age_list, average="macro")
+pre_age = precision_score(np_y_age, pred_age_list, average=None, zero_division=0)
+pre_age_macro = precision_score(np_y_age, pred_age_list, average="macro", zero_division=0)
+f1_age = f1_score(np_y_age, pred_age_list, average=None)
+f1_age_macro = f1_score(np_y_age, pred_age_list, average="macro")
+print("\n年齢")
+print("正解率(Accuracy):{0:.3f}".format(acc_age))
+print("再現率(Recall)")
+print(list(map(round, rec_age, [3]*len(rec_age))))
+print("適合率(Precision)")
+print(list(map(round, pre_age, [3]*len(pre_age))))
+print("F値")
+print(list(map(round, f1_age, [3]*len(f1_age))))
+print("再現率(Recall)平均:{0:.3f}".format(rec_age_macro))
+print("適合率(Precision)平均:{0:.3f}".format(pre_age_macro))
+print("F値平均:{0:.3f}".format(f1_age_macro))
