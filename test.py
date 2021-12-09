@@ -48,21 +48,13 @@ age_label = ['~14', '15~19', '20~24', '25~29', '30~34', '35~39', '40~']
 dataiter = iter(valid_dataloader)
 X, y = dataiter.next()
 X, y = X.to(device), y.to(device)
-# print(X)
-# print(X.shape)
-# print(y)
-# print(y.shape)
 y_sex = y[:, 0]
 y_age = y[:, 1]
 print('GroundTruth: ', ' '.join('%5s' % sex_label[y_sex[j]] for j in range(4)))
 print('GroundTruth: ', ' '.join('%5s' % age_label[y_age[j]] for j in range(4)))
 pred_sex, pred_age = model(X)
-# print(pred_sex)
-# print(pred_age)
 _, pred_sex = torch.max(pred_sex, 1)
 _, pred_age = torch.max(pred_age, 1)
-# print(pred_sex)
-# print(pred_age)
 print('Predicted: ', ' '.join('%5s' % sex_label[pred_sex[j]] for j in range(4)))
 print('Predicted: ', ' '.join('%5s' % age_label[pred_age[j]] for j in range(4)))
 
@@ -132,7 +124,7 @@ print(cm_sex)
 print("年齢の混同行列")
 print(cm_age)
 
-# #性別
+# #性別の評価指標
 acc_sex = accuracy_score(np_y_sex, pred_sex_list)
 rec_sex = recall_score(np_y_sex, pred_sex_list, average=None)
 rec_sex_macro = recall_score(np_y_sex, pred_sex_list, average="macro")
@@ -152,7 +144,7 @@ print("再現率(Recall)平均:{0:.3f}".format(rec_sex_macro))
 print("適合率(Precision)平均:{0:.3f}".format(pre_sex_macro))
 print("F値平均:{0:.3f}".format(f1_sex_macro))
 
-#年齢
+#年齢の評価指標
 acc_age = accuracy_score(np_y_age, pred_age_list)
 rec_age = recall_score(np_y_age, pred_age_list, average=None)
 rec_age_macro = recall_score(np_y_age, pred_age_list, average="macro")

@@ -12,15 +12,10 @@ def valid(dataloader, model, loss_fn1, loss_fn2, device):
             X, y = X.to(device), y.to(device)
             pred_sex, pred_age = model(X)
 
-            # print(pred_sex)
-            # print(pred_age)
             
             #yをsexとageに分ける
             y_sex = y[:, 0]
             y_age = y[:, 1]
-
-            # print(pred_sex[0].equal(pred_sex[1]))
-            # print(pred_age[0].equal(pred_age[1]))
             
             loss_sex += loss_fn1(pred_sex, y_sex).item()
             loss_age += loss_fn2(pred_age, y_age).item()
