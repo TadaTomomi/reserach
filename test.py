@@ -17,10 +17,10 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print("Using {} device".format(device))
 
 #3次元CT(3次元配列)をnumpy配列に入れる
-valid_data = make_data("/home/student/datasets/CT200_160/valid/*")
+valid_data = make_data("/home/student/datasets/CT393/valid/*")
 
 #ラベルをnumpy配列に入れる
-valid_label = make_label('/home/student/datasets/CT200_160/valid_label.csv')
+valid_label = make_label('/home/student/datasets/CT393/valid_label.csv')
 
 #前処理を定義
 mean, std = 0.07, 0.14
