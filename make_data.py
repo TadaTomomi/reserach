@@ -29,6 +29,6 @@ def make_data(data_directory):
 
     return torch_datasets.float()
 
-# valid_data = make_data("/home/student/datasets/CT200_160/valid/*")
+valid_data = make_data("/home/student/datasets/CT393/valid/*")
 # print(valid_data)
-# print(valid_data.shape)
+print(valid_data.shape)

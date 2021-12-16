@@ -20,7 +20,14 @@ def train(dataloader, model, loss_fn1, loss_fn2, optimizer, device):
         loss_age = loss_fn2(pred_age, y_age)
 
         loss = (loss_sex * 7 + loss_age* 2) / 9
-        
+
+        #L2正則化
+        # alpha = 0.001
+        # l2 = torch.tensor(0., requires_grad=True)
+        # for w in model.parameters():
+        #     l2 = l2 + torch.norm(w)**2
+        # loss = (loss_sex * 7 + loss_age* 2) / 9 + alpha * l2
+
         # バックプロパゲーション
         optimizer.zero_grad()
         loss.backward()

@@ -64,3 +64,9 @@ class CNN3D_drop(nn.Module):
         sex = self.fc_sex(x)
         age = self.fc_age(x)
         return sex, age
+
+
+    # #モデルを読み込む
+    # model = CNN3D()
+
+    # print(model)
