@@ -171,22 +171,19 @@ def gradcam(net, img_fpath):
 
     # weight the channels with the corresponding gradients
     # (L_Grad-CAM = alpha * A)
-    feature = feature.detach()
+    feature = feature.detach()  #####(1, 128, 12, 12, 12)
     for i in range(feature.shape[1]):
         feature[:, i, :, :, :] *= pooled_grad[i] 
 
     # average the channels and create an heatmap
     # ReLU(L_Grad-CAM)
-    heatmap = torch.mean(feature, dim=1).squeeze()
+    heatmap = torch.mean(feature, dim=1).squeeze() ####(12, 12, 12)
     heatmap = heatmap.cpu()
-    heatmap = np.maximum(heatmap, 0)
+    heatmap = np.maximum(heatmap, 0) ##マイナスを0にする
 
     # normalization for plotting
     heatmap = heatmap / torch.max(heatmap)
     heatmap = heatmap.numpy()
-
-    # print(feature_grad.shape)
-    # print(heatmap.shape)
 
     # project heatmap onto the input image
     img_3d = make_3d(img_fpath)
