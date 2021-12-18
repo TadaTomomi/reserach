@@ -23,6 +23,7 @@ def make_data(data_directory):
     volume.append(image4)
   zero = np.zeros(((max-num), 1, 96, 96))
   np_volume = np.array(volume)
+  # volume = np.append(np_volume, zero, axis=0).tolist()
   volume = np.append(np_volume, zero, axis=0) / 255.0
   volume = volume.tolist()
   datasets.append(volume)
@@ -43,9 +44,83 @@ def make_3d(data_directory):
     volume.append(image)
   zero = np.zeros(((max-num), 512, 512, 3))
   np_volume = np.array(volume)
+  # volume = np.append(np_volume, zero, axis=0).tolist()
   volume = np.append(np_volume, zero, axis=0)
   volume = volume.tolist()
   return np.array(volume)
+
+# img_3d = make_3d("/home/student/datasets/CT393/valid/0361.18y10m.f")
+# print(img_3d.shape)
+
+# バイリニア補間法でリサイズ
+def resize_bilinear(src, dd, hd, wd):
+
+    # 出力画像用の配列生成（要素は全て空）
+    dst = np.empty((dd, hd, wd))
+
+    # 元画像のサイズを取得
+    d, h, w = src.shape[0], src.shape[1], src.shape[2]
+
+    # 拡大率を計算
+    ax = wd / float(w)
+    ay = hd / float(h)
+    az = dd / float(d)
+
+    # バイリニア補間法
+    for zd in range(0, dd):
+      for yd in range(0, hd):
+          for xd in range(0, wd):
+              x, y, z = xd/ax, yd/ay, zd/az
+              ox, oy, oz = int(x), int(y), int(z)
+
+              # 存在しない座標の処理
+              if ox > w - 2:
+                  ox = w - 2
+              if oy > h - 2:
+                  oy = h - 2
+              if oz > d - 2:
+                  oz = d - 2
+
+              # 重みの計算
+              dx = x - ox
+              dy = y - oy
+              dz = z - oz
+
+              # 出力画像の画素値を計算 #####################後で
+              dst[zd][yd][xd] = (1-dx) * (1-dy) * (1-dz) * src[oz][oy][ox] + \
+                  dx * (1-dy) * (1-dz) * src[oz][oy][ox+1] + (1-dx) * dy * (1-dz) * src[oz][oy+1][ox] + \
+                  dx * dy * (1-dz) * src[oz][oy+1][ox+1] + (1-dx) * (1-dy) * dz * src[oz+1][oy][ox] +  \
+                  dx * (1-dy) * dz * src[oz+1][oy][ox+1] + (1-dx) * dy * dz * src[oz+1][oy+1][ox] + \
+                  dx * dy * dz * src[oz+1][oy+1][ox+1]
+
+    return dst
+
+# 最近傍補間法でリサイズ
+def resize_nearest(src,d,h,w):
+    # 出力画像用の配列生成（要素は全て空）
+    dst = np.empty((d,h,w))
+
+    # 元画像のサイズを取得
+    di, hi, wi = src.shape[0], src.shape[1], src.shape[2]
+
+    # 拡大率を計算
+    ax = w / float(wi)
+    ay = h / float(hi)
+    az = d / float(di)
+
+    # 最近傍補間
+    for z in range(0, d):
+      for y in range(0, h):
+        for x in range(0, w):
+          xi, yi, zi = int(round(x/ax)), int(round(y/ay)), int(round(z/az))
+          # 存在しない座標の処理
+          if xi > wi -1: xi = wi -1
+          if yi > hi -1: yi = hi -1
+          if zi > di -1: zi = di -1
+
+          dst[z][y][x] = src[zi][yi][xi]
+
+    return dst
 
 
 def gradcam(net, img_fpath):
@@ -59,6 +134,7 @@ def gradcam(net, img_fpath):
     
     img = transform(img)
     img = img.to(device)
+    # img = img.unsqueeze(0)
 
     # get features from the last convolutional layer
     x = net.features(img)
@@ -79,17 +155,15 @@ def gradcam(net, img_fpath):
     age = net.fc_age(x)
     pred_sex = torch.argmax(sex).item()
     pred_age = torch.argmax(age).item()
-    # print(sex)
-    # print(age)
     print(sex_label[pred_sex])
     print(age_label[pred_age])
 
-    # get the gradient of the output    
-    # output = (sex[:, pred_sex] + age[:, pred_age]) / 2
+    # get the gradient of the output
+    # output = sex[:, pred_sex] + age[:, pred_age]
     # output = (sex[:, pred_sex] * 7 + age[:, pred_age] * 2) / 9
     #別々にバックワード
-    # output = sex[:, pred_sex]
-    output = age[:, pred_age]
+    output = sex[:, pred_sex]
+    # output = age[:, pred_age]
     output.backward()
 
     # pool the gradients across the channels
@@ -99,7 +173,7 @@ def gradcam(net, img_fpath):
     # (L_Grad-CAM = alpha * A)
     feature = feature.detach()
     for i in range(feature.shape[1]):
-        feature[:, i, :, :] *= pooled_grad[i] 
+        feature[:, i, :, :, :] *= pooled_grad[i] 
 
     # average the channels and create an heatmap
     # ReLU(L_Grad-CAM)
@@ -115,16 +189,14 @@ def gradcam(net, img_fpath):
     # print(heatmap.shape)
 
     # project heatmap onto the input image
-    data_3d = make_3d(img_fpath)
-    plt.figure(figsize=(16,16))
+    img_3d = make_3d(img_fpath)
+    heatmap = resize_bilinear(heatmap, 96, 512, 512)
+    heatmap = np.uint8(255 * heatmap)
+    plt.figure(figsize=(32,32))
     for i in range(12):
-      num = [3, 11, 19, 27, 35, 43, 51, 59, 67, 75, 83, 91]
-      # img = cv2.imread(img_fpath + "/IM-0001-0"+num[i]+".jpg")
-      img = data_3d[num[i]]
-      heatmap_2d = cv2.resize(heatmap[i], (img.shape[1], img.shape[0]))
-      heatmap_2d = np.uint8(255 * heatmap_2d)
-      heatmap_2d = cv2.applyColorMap(heatmap_2d, cv2.COLORMAP_JET)
-      superimposed_img = heatmap_2d * 0.4 + img
+      num = [3, 11, 19, 27, 35, 43, 51, 59, 67, 75, 83, 91] 
+      heatmap_2d = cv2.applyColorMap(heatmap[num[i]], cv2.COLORMAP_JET)
+      superimposed_img = heatmap_2d * 0.4 + img_3d[num[i]]
       superimposed_img = np.uint8(255 * superimposed_img / np.max(superimposed_img))
       superimposed_img = cv2.cvtColor(superimposed_img, cv2.COLOR_BGR2RGB)
       
@@ -133,7 +205,7 @@ def gradcam(net, img_fpath):
       plt.imshow(superimposed_img)
       plt.axis('off')
 
-    plt.savefig("CT/heatmap_age.jpg")
+    plt.savefig("CT/heatmap_12_sex.jpg")
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print("Using {} device".format(device))

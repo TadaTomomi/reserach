@@ -7,7 +7,7 @@ def make_data(data_directory):
     print("making data")
     datasets = []
     directory = sorted(glob.glob(data_directory))
-    max = 100
+    max = 96
     for data in directory:
         volume = []
         files = sorted(glob.glob(data + "/*.jpg"))
@@ -29,6 +29,6 @@ def make_data(data_directory):
 
     return torch_datasets.float()
 
-valid_data = make_data("/home/student/datasets/CT393/valid/*")
+# valid_data = make_data("/home/student/datasets/CT393/valid/*")
 # print(valid_data)
-print(valid_data.shape)
+# print(valid_data.shape)
